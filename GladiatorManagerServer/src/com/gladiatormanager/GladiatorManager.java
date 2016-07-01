@@ -6,7 +6,7 @@ public class GladiatorManager {
 
 	public static void main(String[] args) {
 		RequestListener listener = new RequestListener();
-		listener.Start(7000);
+		listener.Start(7000, "password");
 		
 		String input = "";
 		Scanner in = new Scanner(System.in);
