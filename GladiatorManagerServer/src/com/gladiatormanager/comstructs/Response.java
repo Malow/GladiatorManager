@@ -1,4 +1,5 @@
 package com.gladiatormanager.comstructs;
 
-public interface Response {
+public interface Response
+{
 }
