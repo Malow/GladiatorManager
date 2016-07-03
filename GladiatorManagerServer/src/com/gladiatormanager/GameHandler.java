@@ -5,6 +5,7 @@ import com.gladiatormanager.comstructs.LoginRequest;
 import com.gladiatormanager.comstructs.LoginResponse;
 import com.gladiatormanager.comstructs.RegisterRequest;
 import com.gladiatormanager.comstructs.Response;
+import com.gladiatormanager.database.Database;
 import com.gladiatormanager.database.Database.EmailAlreadyExistsException;
 import com.gladiatormanager.database.Database.UnexpectedException;
 import com.gladiatormanager.database.Database.UsernameAlreadyExistsException;
@@ -48,8 +49,7 @@ public class GameHandler
 
     try
     {
-      System.out.println("New register request received for: " + req.email + " with username: " + req.username
-          + " with pw: " + req.password);
+      System.out.println("New register request received for: " + req.email + " with username: " + req.username + " with pw: " + req.password);
       String authToken = Globals.database.registerAndGetAuthToken(req.email, req.username, req.password);
       return new LoginResponse(true, authToken);
     }
@@ -61,9 +61,15 @@ public class GameHandler
     {
       return new ErrorResponse(false, "Username already taken");
     }
-    catch (UnexpectedException e)
+    catch (Database.UnexpectedException e)
     {
-      System.out.println("Unexpected error when trying to register: " + e.error);
+      System.out.println("Unexpected Database error when trying to register: " + e.error);
+      e.printStackTrace();
+      return new ErrorResponse(false, "Unexpected error");
+    }
+    catch (Exception e)
+    {
+      System.out.println("Unexpected exception when trying to register: " + e.toString());
       e.printStackTrace();
       return new ErrorResponse(false, "Unexpected error");
     }

@@ -3,8 +3,10 @@ package com.gladiatormanager.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.UUID;
 
+import com.gladiatormanager.Password;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 public class SqlDatabase implements Database
@@ -40,8 +42,38 @@ public class SqlDatabase implements Database
 
   public String loginAndGetAuthToken(String email, String password) throws UnexpectedException, WrongPasswordException
   {
-    if (email.equals("lol")) throw new WrongPasswordException();
-    return "ASDQWE";
+    try
+    {
+      PreparedStatement accountStatement = this.connection.prepareStatement("SELECT * FROM Accounts WHERE email = ? ; ");
+      accountStatement.setString(1, email);
+      ResultSet accountResult = accountStatement.executeQuery();
+
+      if (accountResult.next())
+      {
+        String dbpw = accountResult.getString("password");
+        if (Password.checkPassword(password, dbpw))
+        {
+          String sessionId = UUID.randomUUID().toString();
+          PreparedStatement setSessionStatement = this.connection.prepareStatement("UPDATE Accounts SET session_id = ? WHERE email = ? ; ");
+          setSessionStatement.setString(1, sessionId);
+          setSessionStatement.setString(2, email);
+          setSessionStatement.executeUpdate();
+          setSessionStatement.close();
+          accountStatement.close();
+          accountResult.close();
+          return sessionId;
+        }
+      }
+      accountStatement.close();
+      accountResult.close();
+    }
+    catch (Exception e)
+    {
+      UnexpectedException ue = new UnexpectedException(e.toString());
+      ue.setStackTrace(e.getStackTrace());
+      throw ue;
+    }
+    throw new WrongPasswordException();
   }
 
   public String registerAndGetAuthToken(String email, String username, String password)
@@ -52,7 +84,7 @@ public class SqlDatabase implements Database
       String sessionId = UUID.randomUUID().toString();
       PreparedStatement newAccountStatement = this.connection.prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?);");
       newAccountStatement.setString(1, username);
-      newAccountStatement.setString(2, password);
+      newAccountStatement.setString(2, Password.hashPassword(password));
       newAccountStatement.setString(3, email);
       newAccountStatement.setString(4, sessionId);
       newAccountStatement.executeUpdate();

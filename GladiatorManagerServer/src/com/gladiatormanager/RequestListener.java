@@ -118,7 +118,7 @@ public class RequestListener
       SSLContext sslContext = SSLContext.getInstance("TLS");
       char[] password = sslPassword.toCharArray();
       KeyStore ks = KeyStore.getInstance("JKS");
-      FileInputStream fis = new FileInputStream("testkey.jks");
+      FileInputStream fis = new FileInputStream("https_key.jks");
       ks.load(fis, password);
       KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
       kmf.init(ks, password);
