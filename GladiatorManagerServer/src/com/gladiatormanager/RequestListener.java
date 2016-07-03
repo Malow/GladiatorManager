@@ -16,7 +16,9 @@ import javax.net.ssl.TrustManagerFactory;
 
 import com.gladiatormanager.comstructs.LoginRequest;
 import com.gladiatormanager.comstructs.RegisterRequest;
+import com.gladiatormanager.comstructs.ResetPasswordRequest;
 import com.gladiatormanager.comstructs.Response;
+import com.gladiatormanager.comstructs.SendPasswordResetTokenRequest;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -39,6 +41,8 @@ public class RequestListener
     this.initHttpsServer(port, sslPassword);
     this.server.createContext("/login", new LoginHandler());
     this.server.createContext("/register", new RegisterHandler());
+    this.server.createContext("/sendpwresettoken", new SendPasswordResetTokenHandler());
+    this.server.createContext("/resetpw", new ResetPasswordHandler());
     this.server.start();
   }
 
@@ -50,13 +54,14 @@ public class RequestListener
   // Handlers
   static class LoginHandler implements HttpHandler
   {
+    @Override
     public void handle(HttpExchange t)
     {
       try
       {
         String message = getMessage(t);
         LoginRequest req = new Gson().fromJson(message, LoginRequest.class);
-        Response resp = GameHandler.login(req);
+        Response resp = AccountHandler.login(req);
         sendMessage(t, 200, new Gson().toJson(resp));
       }
       catch (Exception e)
@@ -69,18 +74,59 @@ public class RequestListener
 
   static class RegisterHandler implements HttpHandler
   {
+    @Override
     public void handle(HttpExchange t)
     {
       try
       {
         String message = getMessage(t);
         RegisterRequest req = new Gson().fromJson(message, RegisterRequest.class);
-        Response resp = GameHandler.register(req);
+        Response resp = AccountHandler.register(req);
         sendMessage(t, 200, new Gson().toJson(resp));
       }
       catch (Exception e)
       {
         System.out.println("Exception while handling Register request.");
+        e.printStackTrace();
+      }
+    }
+  }
+
+  static class SendPasswordResetTokenHandler implements HttpHandler
+  {
+    @Override
+    public void handle(HttpExchange t)
+    {
+      try
+      {
+        String message = getMessage(t);
+        SendPasswordResetTokenRequest req = new Gson().fromJson(message, SendPasswordResetTokenRequest.class);
+        Response resp = AccountHandler.sendPasswordResetToken(req);
+        sendMessage(t, 200, new Gson().toJson(resp));
+      }
+      catch (Exception e)
+      {
+        System.out.println("Exception while handling SendPasswordResetToken request.");
+        e.printStackTrace();
+      }
+    }
+  }
+
+  static class ResetPasswordHandler implements HttpHandler
+  {
+    @Override
+    public void handle(HttpExchange t)
+    {
+      try
+      {
+        String message = getMessage(t);
+        ResetPasswordRequest req = new Gson().fromJson(message, ResetPasswordRequest.class);
+        Response resp = AccountHandler.resetPassword(req);
+        sendMessage(t, 200, new Gson().toJson(resp));
+      }
+      catch (Exception e)
+      {
+        System.out.println("Exception while handling ResetPassword request.");
         e.printStackTrace();
       }
     }

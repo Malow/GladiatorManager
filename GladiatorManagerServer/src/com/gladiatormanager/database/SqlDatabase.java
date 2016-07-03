@@ -4,15 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.UUID;
 
-import com.gladiatormanager.Password;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 public class SqlDatabase implements Database
 {
   private Connection connection = null;
 
+  @Override
   public void start()
   {
     try
@@ -27,6 +26,7 @@ public class SqlDatabase implements Database
     }
   }
 
+  @Override
   public void close()
   {
     if (this.connection != null) try
@@ -40,32 +40,22 @@ public class SqlDatabase implements Database
     }
   }
 
-  public String loginAndGetAuthToken(String email, String password) throws UnexpectedException, WrongPasswordException
+  @Override
+  public String getPasswordForAccount(String email) throws UnexpectedException, AccountNotFoundException
   {
     try
     {
-      PreparedStatement accountStatement = this.connection.prepareStatement("SELECT * FROM Accounts WHERE email = ? ; ");
-      accountStatement.setString(1, email);
-      ResultSet accountResult = accountStatement.executeQuery();
+      PreparedStatement s1 = this.connection.prepareStatement("SELECT * FROM Accounts WHERE email = ? ; ");
+      s1.setString(1, email);
+      ResultSet s1Res = s1.executeQuery();
 
-      if (accountResult.next())
+      if (s1Res.next())
       {
-        String dbpw = accountResult.getString("password");
-        if (Password.checkPassword(password, dbpw))
-        {
-          String sessionId = UUID.randomUUID().toString();
-          PreparedStatement setSessionStatement = this.connection.prepareStatement("UPDATE Accounts SET session_id = ? WHERE email = ? ; ");
-          setSessionStatement.setString(1, sessionId);
-          setSessionStatement.setString(2, email);
-          setSessionStatement.executeUpdate();
-          setSessionStatement.close();
-          accountStatement.close();
-          accountResult.close();
-          return sessionId;
-        }
+        String dbpw = s1Res.getString("password");
+        s1Res.close();
+        s1.close();
+        return dbpw;
       }
-      accountStatement.close();
-      accountResult.close();
     }
     catch (Exception e)
     {
@@ -73,23 +63,23 @@ public class SqlDatabase implements Database
       ue.setStackTrace(e.getStackTrace());
       throw ue;
     }
-    throw new WrongPasswordException();
+    throw new AccountNotFoundException();
   }
 
-  public String registerAndGetAuthToken(String email, String username, String password)
+  @Override
+  public boolean createAccount(String email, String username, String password, String authToken)
       throws UnexpectedException, EmailAlreadyExistsException, UsernameAlreadyExistsException
   {
     try
     {
-      String sessionId = UUID.randomUUID().toString();
-      PreparedStatement newAccountStatement = this.connection.prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?);");
-      newAccountStatement.setString(1, username);
-      newAccountStatement.setString(2, Password.hashPassword(password));
-      newAccountStatement.setString(3, email);
-      newAccountStatement.setString(4, sessionId);
-      newAccountStatement.executeUpdate();
-      newAccountStatement.close();
-      return sessionId;
+      PreparedStatement s = this.connection.prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?, null);");
+      s.setString(1, username);
+      s.setString(2, password);
+      s.setString(3, email);
+      s.setString(4, authToken);
+      s.executeUpdate();
+      s.close();
+      return true;
     }
     catch (MySQLIntegrityConstraintViolationException e)
     {
@@ -108,5 +98,99 @@ public class SqlDatabase implements Database
       ue.setStackTrace(e.getStackTrace());
       throw ue;
     }
+  }
+
+  @Override
+  public boolean setPasswordResetTokenForAccount(String email, String pwResetToken) throws UnexpectedException, AccountNotFoundException
+  {
+    try
+    {
+      PreparedStatement s1 = this.connection.prepareStatement("UPDATE Accounts SET pw_reset_token = ? WHERE email = ?;");
+      s1.setString(1, pwResetToken);
+      s1.setString(2, email);
+      int rowCount = s1.executeUpdate();
+      s1.close();
+
+      if (rowCount == 1) return true;
+    }
+    catch (Exception e)
+    {
+      UnexpectedException ue = new UnexpectedException(e.toString());
+      ue.setStackTrace(e.getStackTrace());
+      throw ue;
+    }
+    throw new AccountNotFoundException();
+  }
+
+  @Override
+  public boolean setAuthTokenForAccount(String email, String authToken) throws UnexpectedException, AccountNotFoundException
+  {
+    try
+    {
+      PreparedStatement s1 = this.connection.prepareStatement("UPDATE Accounts SET auth_token = ? WHERE email = ? ; ");
+      s1.setString(1, authToken);
+      s1.setString(2, email);
+      int rowCount = s1.executeUpdate();
+      s1.close();
+
+      if (rowCount == 1) return true;
+    }
+    catch (Exception e)
+    {
+      UnexpectedException ue = new UnexpectedException(e.toString());
+      ue.setStackTrace(e.getStackTrace());
+      throw ue;
+    }
+    throw new AccountNotFoundException();
+  }
+
+  @Override
+  public String getPasswordResetTokenForAccount(String email) throws UnexpectedException, AccountNotFoundException
+  {
+    try
+    {
+      PreparedStatement s1 = this.connection.prepareStatement("SELECT * FROM Accounts WHERE email = ? ; ");
+      s1.setString(1, email);
+      ResultSet s1Res = s1.executeQuery();
+
+      if (s1Res.next())
+      {
+        String pwResetToken = s1Res.getString("pw_reset_token");
+        s1Res.close();
+        s1.close();
+        return pwResetToken;
+      }
+    }
+    catch (Exception e)
+    {
+      UnexpectedException ue = new UnexpectedException(e.toString());
+      ue.setStackTrace(e.getStackTrace());
+      throw ue;
+    }
+    throw new AccountNotFoundException();
+  }
+
+  @Override
+  public boolean setPasswordForAccount(String email, String password, String authToken) throws UnexpectedException, AccountNotFoundException
+  {
+    try
+    {
+      PreparedStatement s1 = this.connection
+          .prepareStatement("UPDATE Accounts SET password = ?, auth_token = ?, pw_reset_token = null WHERE email = ?;");
+      s1.setString(1, password);
+      s1.setString(2, authToken);
+      s1.setString(3, email);
+      int rowCount = s1.executeUpdate();
+      s1.close();
+
+      if (rowCount == 1) return true;
+    }
+    catch (Exception e)
+    {
+      UnexpectedException ue = new UnexpectedException(e.toString());
+      ue.setStackTrace(e.getStackTrace());
+      throw ue;
+    }
+    throw new AccountNotFoundException();
   }
 }

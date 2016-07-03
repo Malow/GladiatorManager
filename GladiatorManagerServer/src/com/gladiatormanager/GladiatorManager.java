@@ -8,6 +8,8 @@ public class GladiatorManager
 {
   public static void main(String[] args)
   {
+    Globals.email = new Email();
+    Globals.email.start();
     Globals.database = new SqlDatabase();
     Globals.database.start();
 

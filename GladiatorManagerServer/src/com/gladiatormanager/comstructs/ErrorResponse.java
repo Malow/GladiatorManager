@@ -1,13 +1,12 @@
 package com.gladiatormanager.comstructs;
 
-public class ErrorResponse implements Response
+public class ErrorResponse extends Response
 {
-  public boolean result;
   public String error;
 
   public ErrorResponse(boolean result, String error)
   {
-    this.result = result;
+    super(result);
     this.error = error;
   }
 }

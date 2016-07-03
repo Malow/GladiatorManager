@@ -1,13 +1,12 @@
 package com.gladiatormanager.comstructs;
 
-public class LoginResponse implements Response
+public class LoginResponse extends Response
 {
-  public boolean result;
   public String authToken;
 
   public LoginResponse(boolean result, String authToken)
   {
-    this.result = result;
+    super(result);
     this.authToken = authToken;
   }
 }
