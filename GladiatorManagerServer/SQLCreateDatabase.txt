@@ -18,6 +18,7 @@ CREATE TABLE Accounts (id INT NOT NULL AUTO_INCREMENT,
     pw_reset_token VARCHAR(100),
     PRIMARY KEY (ID));
 
+INSERT INTO Accounts VALUES(DEFAULT, "test", "$2a$12$YM4m48jORjfBGzSHS6UCpefk4YaZas7Z99fU9rdYio1zns8HLmtjm", "test@test.com", NULL, NULL);
 
 
 

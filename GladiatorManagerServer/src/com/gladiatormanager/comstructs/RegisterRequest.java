@@ -1,6 +1,6 @@
 package com.gladiatormanager.comstructs;
 
-public class RegisterRequest
+public class RegisterRequest implements Request
 {
   public String email;
   public String username;
@@ -13,7 +13,8 @@ public class RegisterRequest
     this.password = password;
   }
 
-  public boolean validate()
+  @Override
+  public boolean isValid()
   {
     if (this.email != null && this.username != null && this.password != null) return true;
 

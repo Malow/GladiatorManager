@@ -19,15 +19,8 @@ public class AccountHandler
 {
   public static Response login(LoginRequest req)
   {
-    if (req == null || !req.validate())
-    {
-      System.out.println("Failed Login-request, wrong parameters");
-      return new ErrorResponse(false, "Request has wrong parameters");
-    }
-
     try
     {
-      System.out.println("New login request received for: " + req.email + " with pw: " + req.password);
       String authToken = UUID.randomUUID().toString();
       String dbpw = Globals.database.getPasswordForAccount(req.email);
       if (Password.checkPassword(req.password, dbpw))
@@ -51,15 +44,8 @@ public class AccountHandler
 
   public static Response register(RegisterRequest req)
   {
-    if (req == null || !req.validate())
-    {
-      System.out.println("Failed Register-request, wrong parameters");
-      return new ErrorResponse(false, "Request has wrong parameters");
-    }
-
     try
     {
-      System.out.println("New register request received for: " + req.email + " with username: " + req.username + " with pw: " + req.password);
       String authToken = UUID.randomUUID().toString();
       Globals.database.createAccount(req.email, req.username, Password.hashPassword(req.password), authToken);
       return new LoginResponse(true, authToken);
@@ -88,15 +74,8 @@ public class AccountHandler
 
   public static Response sendPasswordResetToken(SendPasswordResetTokenRequest req)
   {
-    if (req == null || !req.validate())
-    {
-      System.out.println("Failed sendPasswordResetToken-request, wrong parameters");
-      return new ErrorResponse(false, "Request has wrong parameters");
-    }
-
     try
     {
-      System.out.println("New sendPasswordResetToken request received for: " + req.email);
       String pwResetToken = UUID.randomUUID().toString();
       Globals.database.setPasswordResetTokenForAccount(req.email, pwResetToken);
       Globals.email.sendMail(req.email, "Your password reset for GladiatorManager", pwResetToken);
@@ -116,16 +95,8 @@ public class AccountHandler
 
   public static Response resetPassword(ResetPasswordRequest req)
   {
-    if (req == null || !req.validate())
-    {
-      System.out.println("Failed ResetPassword-request, wrong parameters");
-      return new ErrorResponse(false, "Request has wrong parameters");
-    }
-
     try
     {
-      System.out.println("New ResetPassword request received for: " + req.email);
-
       String dbPwResetToken = Globals.database.getPasswordResetTokenForAccount(req.email);
       if (dbPwResetToken.equals(req.pwResetToken))
       {

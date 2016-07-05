@@ -17,7 +17,7 @@ public class SqlDatabase implements Database
     try
     {
       Class.forName("com.mysql.jdbc.Driver");
-      this.connection = DriverManager.getConnection("jdbc:mysql://localhost/GladiatorManager?" + "user=GMS&password=password");
+      this.connection = DriverManager.getConnection("jdbc:mysql://localhost/GladiatorManager?" + "user=GMS&password=password&autoReconnect=true");
     }
     catch (Exception e)
     {

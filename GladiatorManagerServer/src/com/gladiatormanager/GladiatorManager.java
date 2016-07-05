@@ -3,6 +3,7 @@ package com.gladiatormanager;
 import java.util.Scanner;
 
 import com.gladiatormanager.database.SqlDatabase;
+import com.gladiatormanager.httpsapi.RequestListener;
 
 public class GladiatorManager
 {

@@ -1,6 +1,6 @@
 package com.gladiatormanager.comstructs;
 
-public class ResetPasswordRequest
+public class ResetPasswordRequest implements Request
 {
   public String email;
   public String password;
@@ -13,7 +13,8 @@ public class ResetPasswordRequest
     this.pwResetToken = pwResetToken;
   }
 
-  public boolean validate()
+  @Override
+  public boolean isValid()
   {
     if (this.email != null && this.password != null && this.pwResetToken != null) return true;
 
