@@ -14,6 +14,7 @@ import com.gladiatormanager.httpsapi.AccountContextHandlers.LoginHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.RegisterHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.ResetPasswordHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.SendPasswordResetTokenHandler;
+import com.gladiatormanager.httpsapi.GameContextHandlers.GetCharactersHandler;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
@@ -36,6 +37,7 @@ public class RequestListener
     this.server.createContext("/register", new RegisterHandler());
     this.server.createContext("/sendpwresettoken", new SendPasswordResetTokenHandler());
     this.server.createContext("/resetpw", new ResetPasswordHandler());
+    this.server.createContext("/getcharacters", new GetCharactersHandler());
     this.server.start();
   }
 

@@ -13,12 +13,30 @@ DROP TABLE Accounts;
 CREATE TABLE Accounts (id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(40) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
-    email VARCHAR(40) NOT NULL UNIQUE,
-    auth_token VARCHAR(40),
-    pw_reset_token VARCHAR(100),
+    email VARCHAR(50) NOT NULL UNIQUE,
+    auth_token VARCHAR(50),
+    pw_reset_token VARCHAR(50),
     PRIMARY KEY (ID));
+    
+DROP TABLE Characters;
+
+CREATE TABLE Characters (id INT NOT NULL AUTO_INCREMENT, 
+    account_id INT,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    level INT NOT NULL,
+    xp INT NOT NULL,
+    age INT NOT NULL,
+    strength INT NOT NULL,
+    dexterity INT NOT NULL,
+    constitution INT NOT NULL,
+    intelligence INT NOT NULL,
+    willpower INT NOT NULL,
+    PRIMARY KEY (ID),
+    FOREIGN KEY (account_id) REFERENCES Accounts(id));
 
 INSERT INTO Accounts VALUES(DEFAULT, "test", "$2a$12$YM4m48jORjfBGzSHS6UCpefk4YaZas7Z99fU9rdYio1zns8HLmtjm", "test@test.com", NULL, NULL);
+INSERT INTO Characters VALUES(DEFAULT, 1, "test test", 2, 19, 25, 16, 16, 14, 6, 11);
+INSERT INTO Characters VALUES(DEFAULT, 1, "test2 test2", 3, 32, 31, 10, 9, 12, 17, 10);
 
 
 

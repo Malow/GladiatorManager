@@ -12,7 +12,7 @@ import com.sun.net.httpserver.HttpExchange;
 @SuppressWarnings("restriction")
 public class ContextHelpers
 {
-  public static Request getRequest(HttpExchange t, Class<?> c)
+  public static Request getValidRequest(HttpExchange t, Class<?> c)
   {
     try
     {

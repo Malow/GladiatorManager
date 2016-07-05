@@ -1,6 +1,18 @@
 package com.gladiatormanager.comstructs;
 
-public interface Request
+public class Request
 {
-  public boolean isValid();
+  public String email;
+
+  public Request(String email)
+  {
+    this.email = email;
+  }
+
+  public boolean isValid()
+  {
+    if (this.email != null) return true;
+
+    return false;
+  }
 }

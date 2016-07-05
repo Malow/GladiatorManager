@@ -1,15 +1,15 @@
 package com.gladiatormanager.httpsapi;
 
-import static com.gladiatormanager.httpsapi.ContextHelpers.getRequest;
+import static com.gladiatormanager.httpsapi.ContextHelpers.getValidRequest;
 import static com.gladiatormanager.httpsapi.ContextHelpers.sendMessage;
 
-import com.gladiatormanager.AccountHandler;
+import com.gladiatormanager.account.AccountHandler;
+import com.gladiatormanager.account.comstructs.LoginRequest;
+import com.gladiatormanager.account.comstructs.RegisterRequest;
+import com.gladiatormanager.account.comstructs.ResetPasswordRequest;
 import com.gladiatormanager.comstructs.ErrorResponse;
-import com.gladiatormanager.comstructs.LoginRequest;
-import com.gladiatormanager.comstructs.RegisterRequest;
-import com.gladiatormanager.comstructs.ResetPasswordRequest;
+import com.gladiatormanager.comstructs.Request;
 import com.gladiatormanager.comstructs.Response;
-import com.gladiatormanager.comstructs.SendPasswordResetTokenRequest;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -22,7 +22,7 @@ public class AccountContextHandlers
     @Override
     public void handle(HttpExchange t)
     {
-      LoginRequest req = (LoginRequest) getRequest(t, LoginRequest.class);
+      LoginRequest req = (LoginRequest) getValidRequest(t, LoginRequest.class);
       if (req != null)
       {
         Response resp = AccountHandler.login(req);
@@ -40,7 +40,7 @@ public class AccountContextHandlers
     @Override
     public void handle(HttpExchange t)
     {
-      RegisterRequest req = (RegisterRequest) getRequest(t, RegisterRequest.class);
+      RegisterRequest req = (RegisterRequest) getValidRequest(t, RegisterRequest.class);
       if (req != null)
       {
         Response resp = AccountHandler.register(req);
@@ -58,7 +58,7 @@ public class AccountContextHandlers
     @Override
     public void handle(HttpExchange t)
     {
-      SendPasswordResetTokenRequest req = (SendPasswordResetTokenRequest) getRequest(t, SendPasswordResetTokenRequest.class);
+      Request req = getValidRequest(t, Request.class);
       if (req != null)
       {
         Response resp = AccountHandler.sendPasswordResetToken(req);
@@ -76,7 +76,7 @@ public class AccountContextHandlers
     @Override
     public void handle(HttpExchange t)
     {
-      ResetPasswordRequest req = (ResetPasswordRequest) getRequest(t, ResetPasswordRequest.class);
+      ResetPasswordRequest req = (ResetPasswordRequest) getValidRequest(t, ResetPasswordRequest.class);
       if (req != null)
       {
         Response resp = AccountHandler.resetPassword(req);

@@ -2,7 +2,7 @@ package com.gladiatormanager;
 
 import java.util.Scanner;
 
-import com.gladiatormanager.database.SqlDatabase;
+import com.gladiatormanager.database.Database;
 import com.gladiatormanager.httpsapi.RequestListener;
 
 public class GladiatorManager
@@ -11,8 +11,7 @@ public class GladiatorManager
   {
     Globals.email = new Email();
     Globals.email.start();
-    Globals.database = new SqlDatabase();
-    Globals.database.start();
+    Database.init();
 
     int port = 7000;
     String sslPassword = "password";
@@ -32,7 +31,7 @@ public class GladiatorManager
     in.close();
 
     listener.close();
-    Globals.database.close();
+    Database.close();
 
     System.out.println("Server closed successfully");
   }

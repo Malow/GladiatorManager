@@ -1,19 +1,21 @@
-package com.gladiatormanager;
+package com.gladiatormanager.account;
 
 import java.util.UUID;
 
+import com.gladiatormanager.Globals;
+import com.gladiatormanager.Password;
+import com.gladiatormanager.account.comstructs.LoginRequest;
+import com.gladiatormanager.account.comstructs.LoginResponse;
+import com.gladiatormanager.account.comstructs.RegisterRequest;
+import com.gladiatormanager.account.comstructs.ResetPasswordRequest;
 import com.gladiatormanager.comstructs.ErrorResponse;
-import com.gladiatormanager.comstructs.LoginRequest;
-import com.gladiatormanager.comstructs.LoginResponse;
-import com.gladiatormanager.comstructs.RegisterRequest;
-import com.gladiatormanager.comstructs.ResetPasswordRequest;
+import com.gladiatormanager.comstructs.Request;
 import com.gladiatormanager.comstructs.Response;
-import com.gladiatormanager.comstructs.SendPasswordResetTokenRequest;
-import com.gladiatormanager.database.Database;
-import com.gladiatormanager.database.Database.AccountNotFoundException;
-import com.gladiatormanager.database.Database.EmailAlreadyExistsException;
+import com.gladiatormanager.database.AccountAccessor;
+import com.gladiatormanager.database.AccountAccessor.AccountNotFoundException;
+import com.gladiatormanager.database.AccountAccessor.EmailAlreadyExistsException;
+import com.gladiatormanager.database.AccountAccessor.UsernameAlreadyExistsException;
 import com.gladiatormanager.database.Database.UnexpectedException;
-import com.gladiatormanager.database.Database.UsernameAlreadyExistsException;
 
 public class AccountHandler
 {
@@ -22,10 +24,10 @@ public class AccountHandler
     try
     {
       String authToken = UUID.randomUUID().toString();
-      String dbpw = Globals.database.getPasswordForAccount(req.email);
+      String dbpw = AccountAccessor.read(req.email).password;
       if (Password.checkPassword(req.password, dbpw))
       {
-        Globals.database.setAuthTokenForAccount(req.email, authToken);
+        AccountAccessor.setAuthToken(req.email, authToken);
         return new LoginResponse(true, authToken);
       }
       return new ErrorResponse(false, "Wrong account details");
@@ -47,7 +49,7 @@ public class AccountHandler
     try
     {
       String authToken = UUID.randomUUID().toString();
-      Globals.database.createAccount(req.email, req.username, Password.hashPassword(req.password), authToken);
+      AccountAccessor.create(req.email, req.username, Password.hashPassword(req.password), authToken);
       return new LoginResponse(true, authToken);
     }
     catch (EmailAlreadyExistsException e)
@@ -58,7 +60,7 @@ public class AccountHandler
     {
       return new ErrorResponse(false, "Username already taken");
     }
-    catch (Database.UnexpectedException e)
+    catch (UnexpectedException e)
     {
       System.out.println("Unexpected Database error when trying to register: " + e.error);
       e.printStackTrace();
@@ -72,12 +74,12 @@ public class AccountHandler
     }
   }
 
-  public static Response sendPasswordResetToken(SendPasswordResetTokenRequest req)
+  public static Response sendPasswordResetToken(Request req)
   {
     try
     {
       String pwResetToken = UUID.randomUUID().toString();
-      Globals.database.setPasswordResetTokenForAccount(req.email, pwResetToken);
+      AccountAccessor.setPasswordResetToken(req.email, pwResetToken);
       Globals.email.sendMail(req.email, "Your password reset for GladiatorManager", pwResetToken);
       return new Response(true);
     }
@@ -97,11 +99,11 @@ public class AccountHandler
   {
     try
     {
-      String dbPwResetToken = Globals.database.getPasswordResetTokenForAccount(req.email);
+      String dbPwResetToken = AccountAccessor.read(req.email).pwResetToken;
       if (dbPwResetToken.equals(req.pwResetToken))
       {
         String authToken = UUID.randomUUID().toString();
-        Globals.database.setPasswordForAccount(req.email, Password.hashPassword(req.password), authToken);
+        AccountAccessor.setPassword(req.email, Password.hashPassword(req.password), authToken);
         return new LoginResponse(true, authToken);
       }
       return new ErrorResponse(false, "Bad password-reset token.");

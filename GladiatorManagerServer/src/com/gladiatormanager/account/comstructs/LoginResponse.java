@@ -1,4 +1,6 @@
-package com.gladiatormanager.comstructs;
+package com.gladiatormanager.account.comstructs;
+
+import com.gladiatormanager.comstructs.Response;
 
 public class LoginResponse extends Response
 {
