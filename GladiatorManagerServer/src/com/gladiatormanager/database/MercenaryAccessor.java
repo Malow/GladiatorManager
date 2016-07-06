@@ -6,19 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gladiatormanager.database.Database.UnexpectedException;
-import com.gladiatormanager.game.Character;
+import com.gladiatormanager.game.Mercenary;
 
-public class CharacterAccessor
+public class MercenaryAccessor
 {
-  public static List<Character> getCharactersForAccount(int accId) throws UnexpectedException
+  public static List<Mercenary> getMercenariesForAccount(int accId) throws UnexpectedException
   {
     try
     {
-      PreparedStatement s1 = Database.getConnection().prepareStatement("SELECT * FROM Characters WHERE account_id = ? ; ");
+      PreparedStatement s1 = Database.getConnection().prepareStatement("SELECT * FROM Mercenaries WHERE account_id = ? ; ");
       s1.setInt(1, accId);
       ResultSet s1Res = s1.executeQuery();
 
-      List<Character> chars = new ArrayList<Character>();
+      List<Mercenary> chars = new ArrayList<Mercenary>();
 
       while (s1Res.next())
       {
@@ -28,12 +28,12 @@ public class CharacterAccessor
         int xp = s1Res.getInt("xp");
         int age = s1Res.getInt("age");
         int strength = s1Res.getInt("strength");
-        int dexterity = s1Res.getInt("dexterity");
+        int agility = s1Res.getInt("agility");
         int constitution = s1Res.getInt("constitution");
         int intelligence = s1Res.getInt("intelligence");
         int willpower = s1Res.getInt("willpower");
 
-        Character c = new Character(id, name, level, xp, age, strength, dexterity, constitution, intelligence, willpower);
+        Mercenary c = new Mercenary(id, name, level, xp, age, strength, agility, constitution, intelligence, willpower);
         chars.add(c);
       }
       s1Res.close();

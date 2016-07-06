@@ -14,7 +14,7 @@ import com.sun.net.httpserver.HttpHandler;
 @SuppressWarnings("restriction")
 public class GameContextHandlers
 {
-  static class GetCharactersHandler implements HttpHandler
+  static class GetMercenariesHandler implements HttpHandler
   {
     @Override
     public void handle(HttpExchange t)
@@ -22,7 +22,7 @@ public class GameContextHandlers
       AuthorizedRequest req = (AuthorizedRequest) getValidRequest(t, AuthorizedRequest.class);
       if (req != null)
       {
-        Response resp = GameHandler.getCharacters(req);
+        Response resp = GameHandler.getMercenaries(req);
         sendMessage(t, 200, new Gson().toJson(resp));
       }
       else

@@ -1,6 +1,6 @@
 package com.gladiatormanager.game;
 
-public class Character
+public class Mercenary
 {
   int id;
   public String name;
@@ -8,12 +8,12 @@ public class Character
   public int xp;
   public int age;
   public int strength;
-  public int dexterity;
+  public int agility;
   public int constitution;
   public int intelligence;
   public int willpower;
 
-  public Character(int id, String name, int level, int xp, int age, int strength, int dexterity, int constitution, int intelligence, int willpower)
+  public Mercenary(int id, String name, int level, int xp, int age, int strength, int agility, int constitution, int intelligence, int willpower)
   {
     this.id = id;
     this.name = name;
@@ -21,7 +21,7 @@ public class Character
     this.xp = xp;
     this.age = age;
     this.strength = strength;
-    this.dexterity = dexterity;
+    this.agility = agility;
     this.constitution = constitution;
     this.intelligence = intelligence;
     this.willpower = willpower;
