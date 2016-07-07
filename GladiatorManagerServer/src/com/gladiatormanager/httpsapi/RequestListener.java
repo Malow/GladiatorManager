@@ -14,12 +14,12 @@ import com.gladiatormanager.httpsapi.AccountContextHandlers.LoginHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.RegisterHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.ResetPasswordHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.SendPasswordResetTokenHandler;
+import com.gladiatormanager.httpsapi.AccountContextHandlers.SetTeamNameHandler;
 import com.gladiatormanager.httpsapi.GameContextHandlers.GetMercenariesHandler;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
-@SuppressWarnings("restriction")
 public class RequestListener
 {
 
@@ -37,6 +37,9 @@ public class RequestListener
     this.server.createContext("/register", new RegisterHandler());
     this.server.createContext("/sendpwresettoken", new SendPasswordResetTokenHandler());
     this.server.createContext("/resetpw", new ResetPasswordHandler());
+    this.server.createContext("/setteamname", new SetTeamNameHandler());
+
+    //GameContextHandlers
     this.server.createContext("/getmercenaries", new GetMercenariesHandler());
     this.server.start();
   }

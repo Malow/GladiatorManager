@@ -11,7 +11,6 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-@SuppressWarnings("restriction")
 public class GameContextHandlers
 {
   static class GetMercenariesHandler implements HttpHandler

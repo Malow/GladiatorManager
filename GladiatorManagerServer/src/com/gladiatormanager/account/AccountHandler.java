@@ -8,6 +8,7 @@ import com.gladiatormanager.account.comstructs.LoginRequest;
 import com.gladiatormanager.account.comstructs.LoginResponse;
 import com.gladiatormanager.account.comstructs.RegisterRequest;
 import com.gladiatormanager.account.comstructs.ResetPasswordRequest;
+import com.gladiatormanager.account.comstructs.SetTeamNameRequest;
 import com.gladiatormanager.comstructs.ErrorResponse;
 import com.gladiatormanager.comstructs.Request;
 import com.gladiatormanager.comstructs.Response;
@@ -49,7 +50,17 @@ public class AccountHandler
     try
     {
       String authToken = UUID.randomUUID().toString();
-      AccountAccessor.create(req.email, req.username, Password.hashPassword(req.password), authToken);
+      Account acc = new Account();
+      acc.id = null;
+      acc.username = req.username;
+      acc.password = Password.hashPassword(req.password);
+      acc.email = req.email;
+      acc.teamName = null;
+      acc.state = Account.State.IS_REGISTERED;
+      acc.authToken = null;
+      acc.pwResetToken = null;
+
+      AccountAccessor.create(acc);
       return new LoginResponse(true, authToken);
     }
     catch (EmailAlreadyExistsException e)
@@ -114,7 +125,29 @@ public class AccountHandler
     }
     catch (UnexpectedException e)
     {
-      System.out.println("Unexpected error when trying to sendPasswordResetToken: " + e.toString());
+      System.out.println("Unexpected error when trying to resetPassword: " + e.toString());
+      e.printStackTrace();
+      return new ErrorResponse(false, "Unexpected error");
+    }
+  }
+
+  public static Response setTeamName(SetTeamNameRequest req)
+  {
+    try
+    {
+      Account acc = AccountAccessor.read(req.email);
+      acc.teamName = req.teamName;
+      if (acc.state == Account.State.IS_REGISTERED) acc.state = Account.State.HAS_TEAMNAME;
+      AccountAccessor.update(acc);
+      return new Response(true);
+    }
+    catch (AccountNotFoundException e)
+    {
+      return new ErrorResponse(false, "No account found for that email-address");
+    }
+    catch (UnexpectedException e)
+    {
+      System.out.println("Unexpected error when trying to setTeamName: " + e.toString());
       e.printStackTrace();
       return new ErrorResponse(false, "Unexpected error");
     }

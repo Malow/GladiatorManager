@@ -30,7 +30,7 @@ public class AccountAccessor
     private static final long serialVersionUID = 5L;
   }
 
-  // Methods
+  // CRUD Methods
   public static Account read(String email) throws UnexpectedException, AccountNotFoundException
   {
     try
@@ -41,15 +41,16 @@ public class AccountAccessor
 
       if (s1Res.next())
       {
-
         int id = s1Res.getInt("id");
         String username = s1Res.getString("username");
         String password = s1Res.getString("password");
         String db_email = s1Res.getString("email");
+        String db_teamName = s1Res.getString("team_name");
+        int db_state = s1Res.getInt("state");
         String authToken = s1Res.getString("auth_token");
         String pwResetToken = s1Res.getString("pw_reset_token");
 
-        Account acc = new Account(id, username, password, db_email, authToken, pwResetToken);
+        Account acc = new Account(id, username, password, db_email, db_teamName, db_state, authToken, pwResetToken);
         s1Res.close();
         s1.close();
         return acc;
@@ -64,16 +65,19 @@ public class AccountAccessor
     throw new AccountNotFoundException();
   }
 
-  public static boolean create(String email, String username, String password, String authToken)
-      throws UnexpectedException, EmailAlreadyExistsException, UsernameAlreadyExistsException
+  public static boolean create(Account acc) throws UnexpectedException, EmailAlreadyExistsException, UsernameAlreadyExistsException
   {
     try
     {
-      PreparedStatement s = Database.getConnection().prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?, null);");
-      s.setString(1, username);
-      s.setString(2, password);
-      s.setString(3, email);
-      s.setString(4, authToken);
+      PreparedStatement s = Database.getConnection().prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?, ?);");
+      int i = 1;
+      s.setString(i++, acc.username);
+      s.setString(i++, acc.password);
+      s.setString(i++, acc.email);
+      s.setString(i++, acc.teamName);
+      s.setInt(i++, acc.state);
+      s.setString(i++, acc.authToken);
+      s.setString(i++, acc.pwResetToken);
       s.executeUpdate();
       s.close();
       return true;
@@ -97,6 +101,36 @@ public class AccountAccessor
     }
   }
 
+  public static boolean update(Account acc) throws UnexpectedException, AccountNotFoundException
+  {
+    try
+    {
+      PreparedStatement s1 = Database.getConnection().prepareStatement(
+          "UPDATE Accounts SET username = ?, password = ?, email = ?, team_name = ?, state = ?, auth_token = ?, pw_reset_token = ? WHERE id = ?;");
+      int i = 1;
+      s1.setString(i++, acc.username);
+      s1.setString(i++, acc.password);
+      s1.setString(i++, acc.email);
+      s1.setString(i++, acc.teamName);
+      s1.setInt(i++, acc.state);
+      s1.setString(i++, acc.authToken);
+      s1.setString(i++, acc.pwResetToken);
+      s1.setInt(i++, acc.id);
+      int rowCount = s1.executeUpdate();
+      s1.close();
+
+      if (rowCount == 1) return true;
+    }
+    catch (Exception e)
+    {
+      UnexpectedException ue = new UnexpectedException(e.toString());
+      ue.setStackTrace(e.getStackTrace());
+      throw ue;
+    }
+    throw new AccountNotFoundException();
+  }
+
+  // Optimized specific methods
   public static boolean setPasswordResetToken(String email, String pwResetToken) throws UnexpectedException, AccountNotFoundException
   {
     try

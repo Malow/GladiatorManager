@@ -9,7 +9,6 @@ import com.gladiatormanager.comstructs.Request;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 
-@SuppressWarnings("restriction")
 public class ContextHelpers
 {
   public static Request getValidRequest(HttpExchange t, Class<?> c)
