@@ -3,8 +3,6 @@ package com.gladiatormanager.httpsapi;
 import static com.gladiatormanager.httpsapi.ContextHelpers.getValidRequest;
 import static com.gladiatormanager.httpsapi.ContextHelpers.sendMessage;
 
-import java.io.IOException;
-
 import com.gladiatormanager.account.AccountHandler;
 import com.gladiatormanager.account.comstructs.LoginRequest;
 import com.gladiatormanager.account.comstructs.RegisterRequest;
@@ -22,7 +20,7 @@ public class AccountContextHandlers
   static class LoginHandler implements HttpHandler
   {
     @Override
-    public void handle(HttpExchange t) throws IOException
+    public void handle(HttpExchange t)
     {
       LoginRequest req = (LoginRequest) getValidRequest(t, LoginRequest.class);
       if (req != null)
@@ -40,7 +38,7 @@ public class AccountContextHandlers
   static class RegisterHandler implements HttpHandler
   {
     @Override
-    public void handle(HttpExchange t) throws IOException
+    public void handle(HttpExchange t)
     {
       RegisterRequest req = (RegisterRequest) getValidRequest(t, RegisterRequest.class);
       if (req != null)
@@ -58,7 +56,7 @@ public class AccountContextHandlers
   static class SendPasswordResetTokenHandler implements HttpHandler
   {
     @Override
-    public void handle(HttpExchange t) throws IOException
+    public void handle(HttpExchange t)
     {
       Request req = getValidRequest(t, Request.class);
       if (req != null)
@@ -76,7 +74,7 @@ public class AccountContextHandlers
   static class ResetPasswordHandler implements HttpHandler
   {
     @Override
-    public void handle(HttpExchange t) throws IOException
+    public void handle(HttpExchange t)
     {
       ResetPasswordRequest req = (ResetPasswordRequest) getValidRequest(t, ResetPasswordRequest.class);
       if (req != null)
@@ -94,7 +92,7 @@ public class AccountContextHandlers
   static class SetTeamNameHandler implements HttpHandler
   {
     @Override
-    public void handle(HttpExchange t) throws IOException
+    public void handle(HttpExchange t)
     {
       SetTeamNameRequest req = (SetTeamNameRequest) getValidRequest(t, SetTeamNameRequest.class);
       if (req != null)

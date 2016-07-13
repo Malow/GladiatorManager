@@ -3,8 +3,6 @@ package com.gladiatormanager.httpsapi;
 import static com.gladiatormanager.httpsapi.ContextHelpers.getValidRequest;
 import static com.gladiatormanager.httpsapi.ContextHelpers.sendMessage;
 
-import java.io.IOException;
-
 import com.gladiatormanager.comstructs.AuthorizedRequest;
 import com.gladiatormanager.comstructs.ErrorResponse;
 import com.gladiatormanager.comstructs.Response;
@@ -18,7 +16,7 @@ public class GameContextHandlers
   static class GetMercenariesHandler implements HttpHandler
   {
     @Override
-    public void handle(HttpExchange t) throws IOException
+    public void handle(HttpExchange t)
     {
       AuthorizedRequest req = (AuthorizedRequest) getValidRequest(t, AuthorizedRequest.class);
       if (req != null)
