@@ -1,4 +1,4 @@
-package com.gladiatormanager.account.comstructs;
+package com.gladiatormanager.comstructs.account;
 
 import com.gladiatormanager.comstructs.Response;
 

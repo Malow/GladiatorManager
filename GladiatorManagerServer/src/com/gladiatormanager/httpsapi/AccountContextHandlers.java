@@ -4,13 +4,13 @@ import static com.gladiatormanager.httpsapi.ContextHelpers.getValidRequest;
 import static com.gladiatormanager.httpsapi.ContextHelpers.sendMessage;
 
 import com.gladiatormanager.account.AccountHandler;
-import com.gladiatormanager.account.comstructs.LoginRequest;
-import com.gladiatormanager.account.comstructs.RegisterRequest;
-import com.gladiatormanager.account.comstructs.ResetPasswordRequest;
-import com.gladiatormanager.account.comstructs.SetTeamNameRequest;
 import com.gladiatormanager.comstructs.ErrorResponse;
 import com.gladiatormanager.comstructs.Request;
 import com.gladiatormanager.comstructs.Response;
+import com.gladiatormanager.comstructs.account.LoginRequest;
+import com.gladiatormanager.comstructs.account.RegisterRequest;
+import com.gladiatormanager.comstructs.account.ResetPasswordRequest;
+import com.gladiatormanager.comstructs.account.SetTeamNameRequest;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

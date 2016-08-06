@@ -5,9 +5,9 @@ import java.util.List;
 import com.gladiatormanager.comstructs.AuthorizedRequest;
 import com.gladiatormanager.comstructs.ErrorResponse;
 import com.gladiatormanager.comstructs.Response;
+import com.gladiatormanager.comstructs.game.GetMercenariesResponse;
 import com.gladiatormanager.database.AccountAccessor;
 import com.gladiatormanager.database.MercenaryAccessor;
-import com.gladiatormanager.game.comstructs.GetMercenariesResponse;
 
 public class GameHandler
 {

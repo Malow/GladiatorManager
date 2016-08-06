@@ -69,7 +69,7 @@ public class AccountAccessor
   {
     try
     {
-      PreparedStatement s = Database.getConnection().prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?, ?);");
+      PreparedStatement s = Database.getConnection().prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?, ?, ?, ?);");
       int i = 1;
       s.setString(i++, acc.username);
       s.setString(i++, acc.password);

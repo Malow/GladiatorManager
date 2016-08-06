@@ -1,4 +1,4 @@
-package com.gladiatormanager.game.comstructs;
+package com.gladiatormanager.comstructs.game;
 
 import java.util.List;
 
