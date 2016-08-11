@@ -2,7 +2,7 @@ package com.gladiatormanager.game;
 
 public class Mercenary
 {
-  int id;
+  public int id;
   public String name;
   public int level;
   public int xp;
@@ -25,5 +25,16 @@ public class Mercenary
     this.constitution = constitution;
     this.intelligence = intelligence;
     this.willpower = willpower;
+  }
+
+  public static Mercenary GenerateRandom()
+  {
+    return new Mercenary(-1, "a", 1, 1, 1, 1, 1, 1, 1, 1);
+  }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    return ((Mercenary) o).id == this.id;
   }
 }

@@ -17,6 +17,8 @@ import com.gladiatormanager.database.AccountAccessor.AccountNotFoundException;
 import com.gladiatormanager.database.AccountAccessor.EmailAlreadyExistsException;
 import com.gladiatormanager.database.AccountAccessor.UsernameAlreadyExistsException;
 import com.gladiatormanager.database.Database.UnexpectedException;
+import com.gladiatormanager.database.MercenaryAccessor;
+import com.gladiatormanager.game.Mercenary;
 
 public class AccountHandler
 {
@@ -139,6 +141,10 @@ public class AccountHandler
       acc.teamName = req.teamName;
       if (acc.state == Account.State.IS_REGISTERED) acc.state = Account.State.HAS_TEAMNAME;
       AccountAccessor.update(acc);
+      for (int i = 0; i < Globals.Config.STARTER_GENERATED_MERCENARIES; i++)
+      {
+        MercenaryAccessor.addMercenaryForAccount(Mercenary.GenerateRandom(), acc.id);
+      }
       return new Response(true);
     }
     catch (AccountNotFoundException e)

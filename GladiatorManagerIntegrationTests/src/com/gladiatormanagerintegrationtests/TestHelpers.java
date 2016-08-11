@@ -7,7 +7,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.gladiatormanager.comstructs.Response;
 import com.gladiatormanager.comstructs.account.LoginResponse;
+import com.gladiatormanager.comstructs.game.GetMercenariesResponse;
 import com.google.gson.Gson;
 
 public class TestHelpers
@@ -54,4 +56,17 @@ public class TestHelpers
     if (s1Res.next()) { return s1Res.getString("pw_reset_token"); }
     return null;
   }
+
+  public static Response setTeamName(String email, String authToken, String teamName) throws Exception
+  {
+    String request = JsonRequests.setTeamName(email, authToken, teamName);
+    return new Gson().fromJson(ServerConnection.sendMessage("/setteamname", request), Response.class);
+  }
+
+  public static GetMercenariesResponse getMercenaries(String email, String authToken) throws Exception
+  {
+    String request = JsonRequests.getMercenaries(email, authToken);
+    return new Gson().fromJson(ServerConnection.sendMessage("/getmercenaries", request), GetMercenariesResponse.class);
+  }
+
 }

@@ -17,6 +17,7 @@ public class AccountTests
   private static final String TEST_PASSWORD = "testerpw";
   private static final String TEST_USERNAME = "tester";
   private static final String TEST_EMAIL = "tester@test.com";
+  private static final String TEST_TEAM_NAME = "TestTeamName";
 
   private Response sendPasswordResetToken(String email) throws Exception
   {
@@ -34,6 +35,7 @@ public class AccountTests
   public void registerTest() throws Exception
   {
     LoginResponse response = TestHelpers.registerAccount(TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD);
+
     assertEquals(true, response.result);
     assertEquals(true, TestHelpers.isValidToken(response.authToken));
   }
@@ -42,9 +44,10 @@ public class AccountTests
   public void loginTest() throws Exception
   {
     TestHelpers.registerAccount(TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD);
-
     String request = JsonRequests.login(TEST_EMAIL, TEST_PASSWORD);
+
     LoginResponse response = new Gson().fromJson(ServerConnection.sendMessage("/login", request), LoginResponse.class);
+
     assertEquals(true, response.result);
     assertEquals(true, TestHelpers.isValidToken(response.authToken));
   }
@@ -55,6 +58,7 @@ public class AccountTests
     TestHelpers.registerAccount(TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD);
 
     Response response = sendPasswordResetToken(TEST_EMAIL);
+
     assertEquals(true, response.result);
     assertEquals(true, TestHelpers.isValidToken(TestHelpers.getPasswordResetToken(TEST_EMAIL)));
   }
@@ -71,5 +75,15 @@ public class AccountTests
 
     assertEquals(true, response.result);
     assertEquals(true, TestHelpers.isValidToken(response.authToken));
+  }
+
+  @Test
+  public void setTeamNameTest() throws Exception
+  {
+    LoginResponse loginResponse = TestHelpers.registerAccount(TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD);
+
+    Response response = TestHelpers.setTeamName(TEST_EMAIL, loginResponse.authToken, TEST_TEAM_NAME);
+
+    assertEquals(true, response.result);
   }
 }

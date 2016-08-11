@@ -15,6 +15,7 @@ import com.gladiatormanager.httpsapi.AccountContextHandlers.RegisterHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.ResetPasswordHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.SendPasswordResetTokenHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.SetTeamNameHandler;
+import com.gladiatormanager.httpsapi.GameContextHandlers.ChooseInitialMercenariesHandler;
 import com.gladiatormanager.httpsapi.GameContextHandlers.GetMercenariesHandler;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
@@ -41,6 +42,7 @@ public class RequestListener
 
     //GameContextHandlers
     this.server.createContext("/getmercenaries", new GetMercenariesHandler());
+    this.server.createContext("/chooseinitialmercenaries", new ChooseInitialMercenariesHandler());
     this.server.start();
   }
 

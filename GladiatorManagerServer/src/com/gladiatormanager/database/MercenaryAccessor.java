@@ -48,4 +48,52 @@ public class MercenaryAccessor
     }
   }
 
+  public static boolean addMercenaryForAccount(Mercenary mercenary, int accId) throws UnexpectedException
+  {
+    try
+    {
+      PreparedStatement s = Database.getConnection()
+          .prepareStatement("insert into GladiatorManager.Mercenaries values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+      int i = 1;
+      s.setInt(i++, accId);
+      s.setString(i++, mercenary.name);
+      s.setInt(i++, mercenary.level);
+      s.setInt(i++, mercenary.xp);
+      s.setInt(i++, mercenary.age);
+      s.setInt(i++, mercenary.strength);
+      s.setInt(i++, mercenary.agility);
+      s.setInt(i++, mercenary.constitution);
+      s.setInt(i++, mercenary.intelligence);
+      s.setInt(i++, mercenary.willpower);
+      s.executeUpdate();
+      s.close();
+      return true;
+    }
+    catch (Exception e)
+    {
+      UnexpectedException ue = new UnexpectedException(e.toString());
+      ue.setStackTrace(e.getStackTrace());
+      throw ue;
+    }
+  }
+
+  public static boolean delete(Mercenary mercenary) throws UnexpectedException
+  {
+    try
+    {
+      PreparedStatement s = Database.getConnection().prepareStatement("delete from GladiatorManager.Mercenaries where id = ?;");
+      int i = 1;
+      s.setInt(i++, mercenary.id);
+      s.executeUpdate();
+      s.close();
+      return true;
+    }
+    catch (Exception e)
+    {
+      UnexpectedException ue = new UnexpectedException(e.toString());
+      ue.setStackTrace(e.getStackTrace());
+      throw ue;
+    }
+  }
+
 }

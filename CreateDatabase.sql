@@ -24,7 +24,7 @@ DROP TABLE Mercenaries;
 
 CREATE TABLE Mercenaries (id INT NOT NULL AUTO_INCREMENT, 
     account_id INT,
-    name VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(50) NOT NULL,
     level INT NOT NULL,
     xp INT NOT NULL,
     age INT NOT NULL,
