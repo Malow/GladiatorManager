@@ -3,6 +3,7 @@ package com.gladiatormanager.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gladiatormanager.Globals;
 import com.gladiatormanager.account.Account;
 import com.gladiatormanager.comstructs.AuthorizedRequest;
 import com.gladiatormanager.comstructs.ErrorResponse;
@@ -34,6 +35,9 @@ public class GameHandler
   {
     try
     {
+      if (req.mercenariesIds.size() != Globals.Config.STARTER_MERCENARIES_TO_BE_CHOSEN)
+        throw new Exception("Amount of mercenariesIds does not match the correct amount.");
+
       Account acc = AccountAccessor.read(req.email);
       if (acc.state == Account.State.HAS_TEAMNAME)
       {
