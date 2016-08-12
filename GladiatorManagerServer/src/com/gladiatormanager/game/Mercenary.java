@@ -27,9 +27,24 @@ public class Mercenary
     this.willpower = willpower;
   }
 
+  public int GetStatScore()
+  {
+    return this.strength + this.agility + this.constitution + this.intelligence + this.willpower;
+  }
+
   public static Mercenary GenerateRandom()
   {
-    return new Mercenary(-1, "a", 1, 1, 1, 1, 1, 1, 1, 1);
+    int id = -1;
+    String name = NameGenerator.FirstAndLastName();
+    int level = 1;
+    int xp = 0;
+    int age = Dice.dx(20) + 17;
+    int strength = Dice.ydxdlz(4, 6, 1);
+    int agility = Dice.ydxdlz(4, 6, 1);
+    int constitution = Dice.ydxdlz(4, 6, 1);
+    int intelligence = Dice.ydxdlz(4, 6, 1);
+    int willpower = Dice.ydxdlz(4, 6, 1);
+    return new Mercenary(id, name, level, xp, age, strength, agility, constitution, intelligence, willpower);
   }
 
   @Override
