@@ -27,7 +27,7 @@ import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
-public class RequestListener
+public class HttpsApiServer
 {
   static class TestHandler implements HttpHandler
   {
@@ -40,7 +40,7 @@ public class RequestListener
 
   private HttpsServer server = null;
 
-  public RequestListener()
+  public HttpsApiServer()
   {
   }
 

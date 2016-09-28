@@ -45,9 +45,7 @@ public class AccountTests
   public void loginTest() throws Exception
   {
     TestHelpers.registerAccount(TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD);
-    String request = JsonRequests.login(TEST_EMAIL, TEST_PASSWORD);
-
-    LoginResponse response = new Gson().fromJson(ServerConnection.sendMessage("/login", request), LoginResponse.class);
+    LoginResponse response = TestHelpers.login(TEST_EMAIL, TEST_PASSWORD);
 
     assertEquals(true, response.result);
     assertEquals(true, TestHelpers.isValidToken(response.authToken));

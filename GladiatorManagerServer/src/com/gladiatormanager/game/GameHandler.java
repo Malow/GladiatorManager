@@ -19,7 +19,7 @@ public class GameHandler
   {
     try
     {
-      int accId = AccountAccessor.read(req.email).id; // TODO: Maybe store id's for emails in memory to avoid having to do lookups in DB
+      int accId = AccountAccessor.read(req.email).id;
       List<Mercenary> mercenaries = MercenaryAccessor.getMercenariesForAccount(accId);
       return new GetMercenariesResponse(true, mercenaries);
     }

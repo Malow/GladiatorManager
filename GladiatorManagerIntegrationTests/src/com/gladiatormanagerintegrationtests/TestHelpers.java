@@ -67,6 +67,12 @@ public class TestHelpers
     return new Gson().fromJson(ServerConnection.sendMessage("/register", request), LoginResponse.class);
   }
 
+  public static LoginResponse login(String email, String password) throws Exception
+  {
+    String request = JsonRequests.login(email, password);
+    return new Gson().fromJson(ServerConnection.sendMessage("/login", request), LoginResponse.class);
+  }
+
   public static String getPasswordResetToken(String email) throws Exception
   {
     Class.forName("com.mysql.jdbc.Driver");

@@ -2,9 +2,11 @@ package com.gladiatormanager.database;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.gladiatormanager.account.Account;
 import com.gladiatormanager.database.Database.UnexpectedException;
+import com.mysql.jdbc.Statement;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 public class AccountAccessor
@@ -30,9 +32,13 @@ public class AccountAccessor
     private static final long serialVersionUID = 5L;
   }
 
+  private static ConcurrentHashMap<String, Account> cacheByEmail = new ConcurrentHashMap<String, Account>();
+
   // CRUD Methods
   public static Account read(String email) throws UnexpectedException, AccountNotFoundException
   {
+    Account a = cacheByEmail.get(email);
+    if (a != null) return a;
     try
     {
       PreparedStatement s1 = Database.getConnection().prepareStatement("SELECT * FROM Accounts WHERE email = ? ; ");
@@ -44,15 +50,15 @@ public class AccountAccessor
         int id = s1Res.getInt("id");
         String username = s1Res.getString("username");
         String password = s1Res.getString("password");
-        String db_email = s1Res.getString("email");
-        String db_teamName = s1Res.getString("team_name");
-        int db_state = s1Res.getInt("state");
+        String teamName = s1Res.getString("team_name");
+        int state = s1Res.getInt("state");
         String authToken = s1Res.getString("auth_token");
         String pwResetToken = s1Res.getString("pw_reset_token");
 
-        Account acc = new Account(id, username, password, db_email, db_teamName, db_state, authToken, pwResetToken);
+        Account acc = new Account(id, username, password, email, teamName, state, authToken, pwResetToken);
         s1Res.close();
         s1.close();
+        cacheByEmail.put(acc.email, acc);
         return acc;
       }
     }
@@ -69,7 +75,8 @@ public class AccountAccessor
   {
     try
     {
-      PreparedStatement s = Database.getConnection().prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?, ?, ?, ?);");
+      PreparedStatement s = Database.getConnection().prepareStatement("insert into GladiatorManager.Accounts values (default, ?, ?, ?, ?, ?, ?, ?);",
+          Statement.RETURN_GENERATED_KEYS);
       int i = 1;
       s.setString(i++, acc.username);
       s.setString(i++, acc.password);
@@ -78,9 +85,15 @@ public class AccountAccessor
       s.setInt(i++, acc.state);
       s.setString(i++, acc.authToken);
       s.setString(i++, acc.pwResetToken);
-      s.executeUpdate();
-      s.close();
-      return true;
+      int rowCount = s.executeUpdate();
+      ResultSet generatedKeys = s.getGeneratedKeys();
+      if (rowCount != 0 && generatedKeys.next())
+      {
+        acc.id = (int) generatedKeys.getLong(1);
+        s.close();
+        cacheByEmail.put(acc.email, acc);
+        return true;
+      }
     }
     catch (MySQLIntegrityConstraintViolationException e)
     {
@@ -99,6 +112,7 @@ public class AccountAccessor
       ue.setStackTrace(e.getStackTrace());
       throw ue;
     }
+    throw new UnexpectedException("Error while trying to create account, rowcount was 0 or no id could be found.");
   }
 
   public static boolean update(Account acc) throws UnexpectedException, AccountNotFoundException
@@ -119,7 +133,11 @@ public class AccountAccessor
       int rowCount = s1.executeUpdate();
       s1.close();
 
-      if (rowCount == 1) return true;
+      if (rowCount == 1)
+      {
+        cacheByEmail.put(acc.email, acc);
+        return true;
+      }
     }
     catch (Exception e)
     {
@@ -141,7 +159,16 @@ public class AccountAccessor
       int rowCount = s1.executeUpdate();
       s1.close();
 
-      if (rowCount == 1) return true;
+      if (rowCount == 1)
+      {
+        Account cachedAccount = cacheByEmail.get(email);
+        if (cachedAccount != null)
+        {
+          cachedAccount.pwResetToken = pwResetToken;
+          cacheByEmail.put(email, cachedAccount);
+        }
+        return true;
+      }
     }
     catch (Exception e)
     {
@@ -162,7 +189,16 @@ public class AccountAccessor
       int rowCount = s1.executeUpdate();
       s1.close();
 
-      if (rowCount == 1) return true;
+      if (rowCount == 1)
+      {
+        Account cachedAccount = cacheByEmail.get(email);
+        if (cachedAccount != null)
+        {
+          cachedAccount.authToken = authToken;
+          cacheByEmail.put(email, cachedAccount);
+        }
+        return true;
+      }
     }
     catch (Exception e)
     {
@@ -185,7 +221,17 @@ public class AccountAccessor
       int rowCount = s1.executeUpdate();
       s1.close();
 
-      if (rowCount == 1) return true;
+      if (rowCount == 1)
+      {
+        Account cachedAccount = cacheByEmail.get(email);
+        if (cachedAccount != null)
+        {
+          cachedAccount.password = password;
+          cachedAccount.authToken = authToken;
+          cacheByEmail.put(email, cachedAccount);
+        }
+        return true;
+      }
     }
     catch (Exception e)
     {

@@ -3,7 +3,7 @@ package com.gladiatormanager;
 import java.util.Scanner;
 
 import com.gladiatormanager.database.Database;
-import com.gladiatormanager.httpsapi.RequestListener;
+import com.gladiatormanager.httpsapi.HttpsApiServer;
 
 public class GladiatorManager
 {
@@ -18,8 +18,8 @@ public class GladiatorManager
 
     System.out.println("Starting GladiatorManagerServer in directory " + System.getProperty("user.dir"));
     System.out.println("Using port " + port);
-    RequestListener listener = new RequestListener();
-    listener.start(port, sslPassword);
+    HttpsApiServer server = new HttpsApiServer();
+    server.start(port, sslPassword);
 
     String input = "";
     Scanner in = new Scanner(System.in);
@@ -30,7 +30,7 @@ public class GladiatorManager
     }
     in.close();
 
-    listener.close();
+    server.close();
     Database.close();
 
     System.out.println("Server closed successfully");
