@@ -11,6 +11,7 @@ import com.gladiatormanager.comstructs.Response;
 import com.gladiatormanager.comstructs.account.LoginResponse;
 import com.gladiatormanager.comstructs.game.GetMercenariesResponse;
 import com.google.gson.Gson;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
 
 public class TestHelpers
 {
@@ -20,9 +21,30 @@ public class TestHelpers
     return false;
   }
 
-  public static void resetDatabase() throws Exception
+  public static void resetDatabaseTable(String tableName) throws Exception
+  {
+    try
+    {
+      doResetDatabaseTable(tableName);
+    }
+    catch (MySQLNonTransientConnectionException e) // Database probably doesn't exist, create it.
+    {
+      createDatabase();
+    }
+    doResetDatabaseTable(tableName);
+  }
+
+  private static void doResetDatabaseTable(String tableName) throws Exception
   {
     Class.forName("com.mysql.jdbc.Driver");
+    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/GladiatorManager?" + "user=GMS&password=password&autoReconnect=true");
+    String sql = "DELETE FROM " + tableName + " ;";
+    PreparedStatement s1 = connection.prepareStatement(sql);
+    s1.execute();
+  }
+
+  private static void createDatabase() throws Exception
+  {
     Connection connection = DriverManager.getConnection("jdbc:mysql://localhost?" + "user=GMS&password=password&autoReconnect=true");
     String file = new String(Files.readAllBytes(Paths.get("../CreateDatabase.sql")));
     String[] statements = file.split("\\;");
@@ -32,7 +54,7 @@ public class TestHelpers
       {
         connection.prepareStatement(statement + ";").execute();
       }
-      catch (Exception e)
+      catch (Exception e2)
       {
 
       }

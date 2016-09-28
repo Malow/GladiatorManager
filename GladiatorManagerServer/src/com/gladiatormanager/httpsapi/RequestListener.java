@@ -1,5 +1,7 @@
 package com.gladiatormanager.httpsapi;
 
+import static com.gladiatormanager.httpsapi.ContextHelpers.sendMessage;
+
 import java.io.FileInputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
@@ -10,6 +12,7 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
+import com.gladiatormanager.comstructs.Response;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.LoginHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.RegisterHandler;
 import com.gladiatormanager.httpsapi.AccountContextHandlers.ResetPasswordHandler;
@@ -17,12 +20,23 @@ import com.gladiatormanager.httpsapi.AccountContextHandlers.SendPasswordResetTok
 import com.gladiatormanager.httpsapi.AccountContextHandlers.SetTeamNameHandler;
 import com.gladiatormanager.httpsapi.GameContextHandlers.ChooseInitialMercenariesHandler;
 import com.gladiatormanager.httpsapi.GameContextHandlers.GetMercenariesHandler;
+import com.google.gson.Gson;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
 public class RequestListener
 {
+  static class TestHandler implements HttpHandler
+  {
+    @Override
+    public void handle(HttpExchange t)
+    {
+      sendMessage(t, 200, new Gson().toJson(new Response(true)));
+    }
+  }
 
   private HttpsServer server = null;
 
@@ -33,6 +47,7 @@ public class RequestListener
   public void start(int port, String sslPassword)
   {
     this.initHttpsServer(port, sslPassword);
+    this.server.createContext("/test", new TestHandler());
     // AccountContextHandlers
     this.server.createContext("/login", new LoginHandler());
     this.server.createContext("/register", new RegisterHandler());

@@ -26,9 +26,10 @@ public class AccountTests
   }
 
   @Before
-  public void resetDatabase() throws Exception
+  public void setup() throws Exception
   {
-    TestHelpers.resetDatabase();
+    TestHelpers.resetDatabaseTable("mercenaries");
+    TestHelpers.resetDatabaseTable("accounts");
   }
 
   @Test

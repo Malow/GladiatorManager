@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.gladiatormanager.Globals;
@@ -23,14 +24,23 @@ public class GameTests
   private static final String TEST_EMAIL = "tester@test.com";
   private static final String TEST_TEAM_NAME = "TestTeamName";
 
+  private String authToken;
+
+  @Before
+  public void setup() throws Exception
+  {
+    // Reset DB
+    TestHelpers.resetDatabaseTable("mercenaries");
+    TestHelpers.resetDatabaseTable("accounts");
+    // Create account
+    this.authToken = TestHelpers.registerAccount(TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD).authToken;
+    TestHelpers.setTeamName(TEST_EMAIL, this.authToken, TEST_TEAM_NAME);
+  }
+
   @Test
   public void getMercenariesTest() throws Exception
   {
-    TestHelpers.resetDatabase();
-    String authToken = TestHelpers.registerAccount(TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD).authToken;
-    TestHelpers.setTeamName(TEST_EMAIL, authToken, TEST_TEAM_NAME);
-
-    GetMercenariesResponse response = TestHelpers.getMercenaries(TEST_EMAIL, authToken);
+    GetMercenariesResponse response = TestHelpers.getMercenaries(TEST_EMAIL, this.authToken);
 
     assertEquals(true, response.result);
     assertEquals(10, response.mercenaries.size());
@@ -39,10 +49,7 @@ public class GameTests
   @Test
   public void chooseInitialMercenariesTest() throws Exception
   {
-    TestHelpers.resetDatabase();
-    String authToken = TestHelpers.registerAccount(TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD).authToken;
-    TestHelpers.setTeamName(TEST_EMAIL, authToken, TEST_TEAM_NAME);
-    List<Mercenary> mercenaries = TestHelpers.getMercenaries(TEST_EMAIL, authToken).mercenaries;
+    List<Mercenary> mercenaries = TestHelpers.getMercenaries(TEST_EMAIL, this.authToken).mercenaries;
     List<Mercenary> mercenariesKept = new ArrayList<Mercenary>();
     List<Integer> mercenariesIds = new ArrayList<Integer>();
     for (int i = 0; i < Globals.Config.STARTER_MERCENARIES_TO_BE_CHOSEN; i++)
@@ -51,11 +58,11 @@ public class GameTests
       mercenariesKept.add(mercenaries.get(i));
     }
 
-    String request = JsonRequests.chooseInitialMercenaries(TEST_EMAIL, authToken, mercenariesIds);
+    String request = JsonRequests.chooseInitialMercenaries(TEST_EMAIL, this.authToken, mercenariesIds);
     Response response = new Gson().fromJson(ServerConnection.sendMessage("/chooseinitialmercenaries", request), Response.class);
 
     assertEquals(true, response.result);
-    List<Mercenary> mercenariesLeft = TestHelpers.getMercenaries(TEST_EMAIL, authToken).mercenaries;
+    List<Mercenary> mercenariesLeft = TestHelpers.getMercenaries(TEST_EMAIL, this.authToken).mercenaries;
     assertEquals(mercenariesLeft, mercenariesKept);
   }
 }
